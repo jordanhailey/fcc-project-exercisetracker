@@ -12,4 +12,4 @@
 
 - [x] A request to a user's log (`/api/users/:_id/logs`) returns an object with a `count` property representing the number of exercises returned.
 
-- [ ] You can add `from`, `to` and `limit` parameters to a `/api/users/:_id/logs` request to retrieve part of the log of any user. `from` and `to` are dates in `yyyy-mm-dd` format. `limit` is an integer of how many logs to send back.
+- [x] You can add `from`, `to` and `limit` parameters to a `/api/users/:_id/logs` request to retrieve part of the log of any user. `from` and `to` are dates in `yyyy-mm-dd` format. `limit` is an integer of how many logs to send back.
