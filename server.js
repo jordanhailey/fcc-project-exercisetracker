@@ -43,10 +43,10 @@ app.get('/api/users', (req, res) => {
 app.use('/api/users',bodyParser.urlencoded({ extended: true }))
 app.post('/api/users', (req, res) => {
   const {username} = req.body;
-  let id; 
-  addUser(username,(err,res)=>{id = err ? undefined : res});
-  if (id == undefined) res.json({error:"Unable to add user with the name: "+username})
-  res.json({username,_id:id})
+  let _id; 
+  addUser(username,(err,res)=>{_id = err ? undefined : res});
+  if (_id == undefined) res.json({error:"Unable to add user with the name: "+username})
+  res.json({username,_id})
 });
 
 app.use('/api/users/:_id/exercises',bodyParser.urlencoded({ extended: true }))
