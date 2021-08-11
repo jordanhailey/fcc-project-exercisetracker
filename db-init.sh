@@ -4,7 +4,7 @@ echo '{
   "users": [
     {
       "username": "jordan",
-      "exercise_log": [
+      "logs": [
         {
           "description": "build this exercise tracker",
           "duration": "60",
