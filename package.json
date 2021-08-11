@@ -4,6 +4,7 @@
 	"description": "A REST API project, part of Free Code Camp's curriculum",
 	"main": "server.js",
 	"scripts": {
+		"build:db": "./db-init.sh",
 		"start": "node server.js"
 	},
 	"dependencies": {
