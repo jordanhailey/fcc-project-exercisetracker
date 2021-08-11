@@ -4,23 +4,25 @@ const cors = require('cors')
 const fs = require("fs");
 const bodyParser = require('body-parser')
 require('dotenv').config()
+
 function getDB(){
   return JSON.parse(fs.readFileSync(__dirname+"/db.json",{encoding:"utf8"}));
 }
+
 function writeDB(db={"users":[]}){
   if (typeof db !== "object" || db == null || !Array.isArray(db.users)) throw new Error("database object is in improper shape. Must be an object containing a users property in the shape of an Array");
   else fs.writeFileSync(__dirname+"/db.json",JSON.stringify(db,null,2),{encoding:"utf8"});
 }
-function addUser(userName="",cb=(err,res)=>{}) {
+
+function addUser(username="",cb=(err,res)=>{}) {
   if (typeof cb !== "function") throw new Error("Must provide callback function. cb args to be returned(error,response)");
-  if (userName == "") throw new Error("Unable to create user without a name.");
+  if (username == "") throw new Error("Unable to create user without a name.");
   else {
-    const {users} = getDB();
+    let {users} = getDB();
     const id = users.length;
-    users.push({"username":userName})
+    users = [...users,{username,"logs":[]}]
     try {
-      console.log("TODO:WRITE",{users})
-      // writeDB({users})
+      writeDB({users})
       cb(null,id);
     } catch (err) {
       cb(err);
@@ -40,7 +42,6 @@ app.get('/api/users', (req, res) => {
 });
 app.use('/api/users',bodyParser.urlencoded({ extended: true }))
 app.post('/api/users', (req, res) => {
-  const {users} = getDB();
   const {username} = req.body;
   let id; 
   addUser(username,(err,res)=>{id = err ? undefined : res});
@@ -56,9 +57,10 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 app.get('/api/users/:_id/logs', (req, res) => {
   const {users} = getDB();
   const user = users[req.params._id];
-  let logs;
-  if (user) logs = user.exercise_log;
-  res.json({user:user.username,logs})
+  if (!user) res.json({error:"unable to find user"})
+  let {logs} = user || [];
+  let count = logs? logs.length : 0;
+  res.json({user:user.username,logs,count})
 });
 
 
