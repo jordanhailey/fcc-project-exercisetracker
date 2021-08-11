@@ -30,6 +30,33 @@ function addUser(username="",cb=(err,res)=>{}) {
   }
 }
 
+function zeroPad(str){
+  str = Number(str);
+  if (str !== str || str < 0 ) throw new Error("NaN or negative")
+  return str <= 9 ? `0${str}` : str;
+}
+
+function addExercise({_id=null,description="",duration=0,date=Date.now()},cb=(err,res)=>{}) {
+  if (_id == null || !description || !duration) cb("fields cannot be blank",null)
+  else {
+    if (!date) {
+      let d = new Date();
+      let [yyyy,mm,dd] = [d.getFullYear(),zeroPad(d.getMonth()+1),zeroPad(d.getDate())];
+      date = `${yyyy}-${mm}-${dd}`;
+    };
+    const {users} = getDB();
+    let user = users[_id];
+    user.logs = [...user.logs,{description,duration,date}]
+    try {
+      writeDB({users})
+      cb(null,{...user})
+    } catch (err) {
+      cb(err,null)
+    }
+    ;
+  }
+}
+
 app.use(cors())
 app.use(express.static('public'))
 app.get('/', (req, res) => {
@@ -51,7 +78,11 @@ app.post('/api/users', (req, res) => {
 
 app.use('/api/users/:_id/exercises',bodyParser.urlencoded({ extended: true }))
 app.post('/api/users/:_id/exercises', (req, res) => {
-  res.json({message:`hello POST to /api/users/${req.params._id}/exercises`})
+  let user;
+  const {_id} = req.params
+  addExercise({_id,...req.body},(err,res)=>{user = err ? undefined : res})
+  if (user == undefined) res.json({error:"Unable to complete request"})
+  else res.json({...user})
 });
 
 app.get('/api/users/:_id/logs', (req, res) => {
